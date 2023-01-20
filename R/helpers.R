@@ -417,3 +417,14 @@ createEmbeddings <- function(con, n.iterations = 1, min.group.size = 10, ncomps 
   
   return(con)
 }
+
+getConditionPerCell <- function(con, conditions = c("CTRL","PD","MSA")) {
+  spc <- con$getDatasetPerCell() 
+  out <- spc %>% 
+    as.character() %>% 
+    grepl.replace(conditions) %>% 
+    as.factor() %>% 
+    `names<-`(spc %>% names())
+  
+  return(out)
+}

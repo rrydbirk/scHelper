@@ -7,11 +7,7 @@ plotEmbeddingOverview <- function(con, dot.size = 0.5) {
   # Generate factors
   spc <- con$getDatasetPerCell()
   
-  cpc <- spc %>% 
-    as.character() %>% 
-    grepl.replace(c("CTRL","PD","MSA")) %>% 
-    as.factor() %>% 
-    `names<-`(spc %>% names())
+  cpc <- getConditionPerCell(con)
   
   # Get embedding plots
   embeddings <- con$embeddings %>% 
