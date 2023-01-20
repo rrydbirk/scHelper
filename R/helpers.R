@@ -418,6 +418,7 @@ createEmbeddings <- function(con, n.iterations = 1, min.group.size = 10, ncomps 
   return(con)
 }
 
+#' @export
 getConditionPerCell <- function(con, conditions = c("CTRL","PD","MSA")) {
   spc <- con$getDatasetPerCell() 
   out <- spc %>% 
