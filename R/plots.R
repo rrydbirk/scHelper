@@ -3,7 +3,12 @@
 NULL
 
 #' @export
-plotEmbeddingOverview <- function(con, dot.size = 0.5) {
+plotEmbeddingOverview <- function(con, dot.size = 0.5, clustering = NULL) {
+  # Checks
+  if (!is.null(clustering)) {
+    if (!clustering %in% names(con$clusters)) stop("'clustering' not found.")
+  }
+  
   # Generate factors
   spc <- con$getDatasetPerCell()
   
@@ -14,7 +19,8 @@ plotEmbeddingOverview <- function(con, dot.size = 0.5) {
     names() %>% 
     lapply(\(emb) con$plotGraph(embedding = emb, 
                                 title = paste0(emb,", clusters"), 
-                                size = dot.size)
+                                size = dot.size,
+                                clustering = clustering)
     )
   
   # Get sample plots
@@ -26,7 +32,8 @@ plotEmbeddingOverview <- function(con, dot.size = 0.5) {
                     mark.groups = FALSE, 
                     show.legend = FALSE,
                     size = dot.size,
-                    title = paste0(emb,", samples"))
+                    title = paste0(emb,", samples"),
+                    clustering = clustering)
     })
   
   # Get condition plots
@@ -38,7 +45,8 @@ plotEmbeddingOverview <- function(con, dot.size = 0.5) {
                     mark.groups = FALSE, 
                     show.legend = FALSE,
                     size = dot.size,
-                    title = paste0(emb,", conditions"))
+                    title = paste0(emb,", conditions"),
+                    clustering = clustering)
     })
   
   # Plot
