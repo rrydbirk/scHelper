@@ -374,7 +374,7 @@ dotPlot2 <- function (markers, count.matrix, cell.groups, marker.colour = "black
 }
 
 #' @export
-createEmbeddings <- function(con, n.iterations = 1, min.group.size = 10, ncomps = 100) {
+createEmbeddings <- function(con, n.iterations = 2, min.group.size = 10, ncomps = 40, alignment.strength = TRUE) {
   con$embedding <- NULL
   con$embeddings <- NULL
   
@@ -390,12 +390,14 @@ createEmbeddings <- function(con, n.iterations = 1, min.group.size = 10, ncomps 
   con$embedGraph(method = "UMAP", embedding.name = "UMAP_PCA")
   con$embedGraph(method = "largeVis", embedding.name = "largeVis_PCA")
   
-  # PCA space, AS01
-  con$buildGraph(space = "PCA", alignment.strength = 0.1, ncomps = ncomps)
-  
-  ## Embed
-  con$embedGraph(method = "UMAP", embedding.name = "UMAP_PCA_AS01")
-  con$embedGraph(method = "largeVis", embedding.name = "largeVis_PCA_AS01")
+  if (alignment.strength) {
+    # PCA space, AS01
+    con$buildGraph(space = "PCA", alignment.strength = 0.1, ncomps = ncomps)
+    
+    ## Embed
+    con$embedGraph(method = "UMAP", embedding.name = "UMAP_PCA_AS01")
+    con$embedGraph(method = "largeVis", embedding.name = "largeVis_PCA_AS01")
+  }
   
   # CPCA space
   
@@ -406,14 +408,16 @@ createEmbeddings <- function(con, n.iterations = 1, min.group.size = 10, ncomps 
   con$embedGraph(method = "UMAP", embedding.name = "UMAP_CPCA")
   con$embedGraph(method = "largeVis", embedding.name = "largeVis_CPCA")
   
-  # CPCA space, AS01
-  con$buildGraph(space = "CPCA", alignment.strength = 0.1, ncomps = ncomps)
-  
-  ## Build graph
-  
-  ## Embed
-  con$embedGraph(method = "UMAP", embedding.name = "UMAP_CPCA_AS01")
-  con$embedGraph(method = "largeVis", embedding.name = "largeVis_CPCA_AS01")
+  if (alignment.strength) {
+    # CPCA space, AS01
+    con$buildGraph(space = "CPCA", alignment.strength = 0.1, ncomps = ncomps)
+    
+    ## Build graph
+    
+    ## Embed
+    con$embedGraph(method = "UMAP", embedding.name = "UMAP_CPCA_AS01")
+    con$embedGraph(method = "largeVis", embedding.name = "largeVis_CPCA_AS01")
+  }
   
   return(con)
 }
