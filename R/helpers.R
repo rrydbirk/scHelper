@@ -259,11 +259,7 @@ renameAnnotation <- function(annotation, old, new) {
   return(annotation)
 }
 
-#' @export
-dotSize <- function(size, alpha=1) {
-  ggplot2::guides(colour = guide_legend(override.aes = list(size=size,
-                                                            alpha=alpha)))
-}
+
 
 #' @export
 checkDims <- function(cm, con) {
@@ -285,92 +281,6 @@ grepl.replace <- function(x, patterns, result = NULL) {
     x[grepl(patterns[i], x)] <- result[i]
   }
   return(x)
-}
-
-#' @export
-dotPlot2 <- function (markers, count.matrix, cell.groups, marker.colour = "black", 
-                      cluster.colour = "black", xlab = "Marker", ylab = "Cluster", 
-                      n.cores = 1, text.angle = 45, gene.order = NULL, cols = c("blue", 
-                                                                                "red"), col.min = -2.5, col.max = 2.5, dot.min = 0, 
-                      dot.scale = 6, scale.by = "radius", scale.min = NA, scale.max = NA, 
-                      verbose = TRUE, ...) 
-{
-  scale.func <- switch(scale.by, size = scale_size, radius = scale_radius, 
-                       stop("'scale.by' must be either 'size' or 'radius'"))
-  if (!is.character(markers)) {
-    stop("'markers' must be a character vector.")
-  }
-  missing.markers <- setdiff(markers, colnames(count.matrix))
-  if (length(missing.markers) > 0) {
-    message("Not all markers are in 'count.matrix'. The following are missing: ", 
-            paste(missing.markers, collapse = " "))
-    stop("Please update 'markers'.")
-  }
-  marker.table <- table(markers)
-  if (sum(marker.table > 1) != 0) {
-    message("The following genes are present more than once in 'markers': ", 
-            paste(names(marker.table[marker.table > 1]), collapse = " "), 
-            " These genes will only be plotted at first instace. Consider revising. ")
-  }
-  if (verbose) {
-    message("Extracting gene expression... ")
-  }
-  if (inherits(cell.groups, "factor")) {
-    tryCatch({
-      if (verbose) {
-        message("Treating 'cell.groups' as a factor.")
-      }
-      cell.groups %<>% as.factor()
-    }, error = function(e) stop("Could not convert 'cell.groups' to a factor\n", 
-                                e))
-  }
-  p.df <- plapply(markers, function(g) data.frame(Expr = count.matrix[names(cell.groups), 
-                                                                      g], Type = cell.groups, Gene = g), n.cores = n.cores, 
-                  progress = verbose, ...) %>% Reduce(rbind, .)
-  if (is.logical(gene.order) && gene.order) {
-    gene.order <- unique(markers)
-  }
-  
-  if (!is.null(gene.order)) {
-    p.df %<>% dplyr::mutate(Gene = factor(as.character(.data$Gene), 
-                                          levels = gene.order))
-  }
-  if (verbose) {
-    message("Calculating expression distributions... ")
-  }
-  data.plot <- levels(cell.groups) %>% plapply(function(t) {
-    markers %>% lapply(function(g) {
-      df <- p.df %>% dplyr::filter(.data$Type == t, .data$Gene == 
-                                     g)
-      pct.exp <- sum(df$Expr > 0)/dim(df)[1] * 100
-      avg.exp <- mean(df$Expr[df$Expr > 0])
-      res <- data.frame(gene = g, pct.exp = pct.exp, avg.exp = avg.exp)
-      return(res)
-    }) %>% Reduce(rbind, .)
-  }, n.cores = n.cores, progress = verbose, ...) %>% stats::setNames(levels(cell.groups)) %>% 
-    dplyr::bind_rows(., .id = "cluster")
-  data.plot$cluster %<>% factor(., levels = rev(unique(.)))
-  data.plot %<>% dplyr::arrange(.data$gene)
-  data.plot$avg.exp.scaled <- data.plot$gene %>% unique %>% 
-    sapply(function(g) {
-      data.plot %>% .[.$gene == g, "avg.exp"] %>% scale %>% 
-        setMinMax(min = col.min, max = col.max)
-    }) %>% unlist %>% as.numeric
-  data.plot$pct.exp[data.plot$pct.exp < dot.min] <- NA
-  cluster.colour %<>% rev
-  if (!is.null(gene.order)) data.plot %<>% mutate(gene = gene %>% factor(levels = gene.order))
-  plot <- ggplot(data.plot, aes(gene, cluster)) + 
-    geom_point(aes_string(size = "pct.exp", color = "avg.exp.scaled")) + 
-    scale.func(range = c(0, dot.scale), limits = c(scale.min, 
-                                                   scale.max)) + theme(axis.text.x = element_text(angle = text.angle, 
-                                                                                                  hjust = 1, colour = marker.colour), axis.text.y = element_text(colour = cluster.colour), 
-                                                                       panel.background = element_rect(fill = "white", colour = "black", 
-                                                                                                       size = 1, linetype = "solid"), panel.grid.major = element_blank(), 
-                                                                       panel.grid.minor = element_blank()) + guides(size = guide_legend(title = "Percent expressed"), 
-                                                                                                                    color = guide_colorbar(title = "Average expression")) + 
-    labs(x = xlab, y = ylab) + scale_color_gradient(low = cols[1], 
-                                                    high = cols[2])
-  return(plot)
 }
 
 #' @export
