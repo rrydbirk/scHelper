@@ -11,9 +11,9 @@ biocViews:
 Imports:
     conos,
     cowplot,
+    ggplot2,
     dplyr,
     magrittr,
-    Seurat,
     sparseMatrixStats
 Suggests:
 Roxygen: list(markdown = TRUE)

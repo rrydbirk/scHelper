@@ -37,4 +37,3 @@ Miscellanious:
 
 - sortCPDB # Sort CellPhoneDB results
 - dotSize # Change ggplot2 geom_point size *post* definition of plot
-- dotPlot2 # Bug fixes for sccore::dotPlot (waiting for release in newer version of sccore)

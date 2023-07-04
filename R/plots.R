@@ -59,3 +59,9 @@ plotEmbeddingOverview <- function(con, dot.size = 0.5, clustering = NULL) {
     }) %>% 
     plot_grid(plotlist = ., ncol = 1)
 }
+
+#' @export
+dotSize <- function(size, alpha=1) {
+  ggplot2::guides(colour = guide_legend(override.aes = list(size=size,
+                                                            alpha=alpha)))
+}
