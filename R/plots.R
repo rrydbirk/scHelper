@@ -1,4 +1,4 @@
-#' @import magrittr conos
+#' @import magrittr conos ggplot2
 #' @importFrom cowplot plot_grid
 NULL
 

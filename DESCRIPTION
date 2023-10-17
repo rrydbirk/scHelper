@@ -1,7 +1,7 @@
 Package: scHelper
 Title: Single-Cell Helper
 Version: 0.0.3
-Authors@R: c(person("Rasmus", "Rydbirk", email = "rasmus.rydbirk@bric.ku.dk", role = c("aut", "cre")))
+Authors@R: c(person("Rasmus", "Rydbirk", email = "rrydbirk@bmb.sdu.dk", role = c("aut", "cre")))
 Description: Helper functions for single-cell analyses
 License: GPL-3
 Encoding: UTF-8
@@ -20,4 +20,4 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 URL: https://github.com/rrydbirk/scHelper
 BugReports: https://github.com/rrydbirk/scHelper/issues
-Maintainer: Rasmus Rydbirk <rasmus.rydbirk@bric.ku.dk>
+Maintainer: Rasmus Rydbirk <rrydbirk@bmb.sdu.dk>
