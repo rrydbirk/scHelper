@@ -343,3 +343,13 @@ getConditionPerCell <- function(con, conditions = c("CTRL","PD","MSA")) {
   
   return(out)
 }
+
+#' @export
+sget <- function(x, list.object) {
+  sapply(x, '[[', list.object)
+}
+
+#' @export
+lget <- function(x, list.object) {
+  lapply(x, '[[', list.object)
+}
