@@ -37,3 +37,5 @@ Miscellanious:
 
 - sortCPDB # Sort CellPhoneDB results
 - dotSize # Change ggplot2 geom_point size *post* definition of plot
+- sget # sapply('[[', x) where x is a number
+- lget # Same as sget, but lapply
