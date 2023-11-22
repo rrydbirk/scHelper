@@ -353,3 +353,48 @@ sget <- function(x, list.object) {
 lget <- function(x, list.object) {
   lapply(x, '[[', list.object)
 }
+
+#' @export
+prepareObjectsForVelocity <- function(con, annotation, out.dir, prefix, embedding, verbose = T) {
+  # Checks
+  requireNamespace("sccore")
+  sccore::checkPackageInstalled(c("qs","fastMatMR","conos","dplyr","magrittr")) # Need extension that's Seurat/Conos specific
+  anno <- annotation[!is.na(annotation)]
+  
+  # Create objects
+  cm.merge <- con$getJointCountMatrix(raw = T) # Consider creating parameter for this. Don't use F for Conos!
+  
+  anno.df <- anno %>% 
+    {data.frame(cellid = names(.), annotation = unname(.))}
+  
+  emb <- con$embeddings[[embedding]]
+  if (is.null(emb)) stop("Embedding doesn't exist.")
+  
+  # Create index
+  idx = Reduce(intersect, list(rownames(cm.merge), anno.df$cellid, rownames(emb)))
+  if (verbose) message(paste0("Using index of ",length(idx)," cells"))
+  
+  # Sort
+  cm.merge %<>% .[match(idx, rownames(.)), ]
+  anno.df %<>% .[match(idx, .$cellid), ]
+  emb %<>% .[match(idx, rownames(.)), ]
+  
+  # Save objects
+  fastMatMR::write_fmm(cm.merge, 
+                       paste0(paste(out.dir, prefix, sep = "/"), ".mtx"))
+  if (verbose) message(paste0("Sparse matrix saved as ",paste0(paste(out.dir, prefix, sep = "/"), ".mtx")))
+  
+  object.list <- list(rownames(cm.merge), colnames(cm.merge), anno.df, emb)
+  suffices <- c(".cells", ".genes", ".annotation", ".embedding")
+  
+  for(x in seq(4)) {
+    write.table(object.list[[x]], 
+                paste0(paste(out.dir, prefix, sep = "/"), suffices[[x]]), 
+                sep = ",", 
+                dec = ".", 
+                row.names = F, 
+                col.names = F)
+    
+    if (verbose) message(paste0("Created ", paste0(paste(out.dir, prefix, sep = "/"), suffices[[x]])))
+  }
+}

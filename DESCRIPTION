@@ -1,7 +1,7 @@
 Package: scHelper
 Title: Single-Cell Helper
-Version: 0.0.3
-Authors@R: c(person("Rasmus", "Rydbirk", email = "rrydbirk@bmb.sdu.dk", role = c("aut", "cre")))
+Version: 0.0.4
+Authors@R: c(person("Rasmus", "Rydbirk", email = "rasmus.rydbirk@bric.ku.dk", role = c("aut", "cre")))
 Description: Helper functions for single-cell analyses
 License: GPL-3
 Encoding: UTF-8
@@ -14,8 +14,11 @@ Imports:
     ggplot2,
     dplyr,
     magrittr,
+    sccore,
     sparseMatrixStats
 Suggests:
+    fastMatMR,
+    qs
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 URL: https://github.com/rrydbirk/scHelper
