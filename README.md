@@ -39,3 +39,4 @@ Miscellanious:
 - dotSize # Change ggplot2 geom_point size *post* definition of plot
 - sget # sapply('[[', x) where x is a number
 - lget # Same as sget, but lapply
+- prepareObjectsForVelocity # Create objects to transfer data from R to Python
