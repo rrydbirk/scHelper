@@ -38,5 +38,5 @@ Miscellanious:
 - sortCPDB # Sort CellPhoneDB results
 - dotSize # Change ggplot2 geom_point size *post* definition of plot
 - sget # sapply('[[', x) where x is a number
-- lget # Same as sget, but lapply
-- prepareObjectsForVelocity # Create objects to transfer data from R to Python
+- lget # Same as sget, but lapply and x can be a character as well
+- prepareObjectsForPython # Create objects to transfer data from R to Python

@@ -355,7 +355,7 @@ lget <- function(x, list.object) {
 }
 
 #' @export
-prepareObjectsForVelocity <- function(con, annotation, out.dir, prefix, embedding, verbose = T) {
+prepareObjectsForPython <- function(con, annotation, out.dir, prefix, embedding, genes.to.omit = NULL, verbose = T) {
   # Checks
   requireNamespace("sccore")
   sccore::checkPackageInstalled(c("qs","fastMatMR","conos","dplyr","magrittr")) # Need extension that's Seurat/Conos specific
@@ -378,6 +378,15 @@ prepareObjectsForVelocity <- function(con, annotation, out.dir, prefix, embeddin
   cm.merge %<>% .[match(idx, rownames(.)), ]
   anno.df %<>% .[match(idx, .$cellid), ]
   emb %<>% .[match(idx, rownames(.)), ]
+  
+  # Omit genes
+  if (!is.null(genes.to.omit)) {
+    if (all(genes.to.omit %in% colnames(cm.merge))) {
+      cm.merge %<>% .[, !colnames(.) %in% genes.to.omit]
+    } else {
+      stop(paste0("These genes are not present: ",paste(setdiff(genes.to.omit, colnames(cm.merge)), collapse = " ")))
+    }
+  }
   
   # Save objects
   fastMatMR::write_fmm(cm.merge, 
