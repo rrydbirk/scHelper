@@ -185,11 +185,13 @@ quickConos <- function(cms,
 
 #' @export
 collapseAnnotation <- function(anno, label) {
-  anno %<>% factor
-  idx <- grepl(label,levels(anno))
-  cat(paste0("Collapsing ",sum(idx)," labels containing '",label,"' in their name into one label.\n"))
-  levels(anno)[idx] <- c(label)
-  anno %<>% factor
+  for (lab in label) {
+    anno %<>% factor()
+    idx <- grepl(lab, levels(anno))
+    cat(paste0("Collapsing ", sum(idx), " labels containing '", lab, "' in their name into one label.\n"))
+    levels(anno)[idx] <- c(lab)
+    anno %<>% factor()
+  }
   return(anno)
 }
 
