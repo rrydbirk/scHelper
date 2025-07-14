@@ -104,83 +104,88 @@ buildConosGraph <- function(con,
 }
 
 #' @export
-quickConos <- function(cms, 
-                       sample.names,
-                       n.cores.p2,
-                       n.cores.con,
-                       n.odgenes=3e3, 
-                       nPcs = 50, 
-                       k.p2 = 30, 
-                       perplexity = 50, 
-                       log.scale = TRUE, 
-                       trim = 10, 
-                       keep.genes = NULL, 
-                       min.cells.per.gene = 3, 
-                       min.transcripts.per.cell = 200, 
-                       get.largevis = F, 
-                       get.tsne = F, 
-                       make.geneknn = F,
-                       k.conos=15, 
-                       k.self=30, 
-                       space='PCA', 
-                       ncomps=40, 
-                       matching.method='mNN', 
-                       metric='angular', 
-                       score.component.variance=T,
-                       alignment.strength=0,
-                       min.dist=0.01, 
-                       spread=15,
-                       n.iterations = 1) {
-  if(length(cms)==length(sample.names)) {
-    if(any(is.na(sample.names))) stop("Names contains NAs")
-  }
-  
-  if(any(duplicated(unlist(lapply(cms,colnames))))) {
-    cms <- sample.names %>% 
-      lapply(\(sample) {
-        cm <- cms[[sample]]
-        colnames(cm) %<>% {paste0(sample,"!!",.)}
-        return(cm)
-      }) %>% 
-      setNames(sample.names)
-    
+quickConos <- function (cms,
+                        sample.names,
+                        n.cores.p2,
+                        n.cores.con,
+                        n.odgenes = 3000,
+                        nPcs = 50,
+                        k.p2 = 30,
+                        perplexity = 50,
+                        log.scale = TRUE,
+                        trim = 10,
+                        keep.genes = NULL,
+                        min.cells.per.gene = 3,
+                        min.transcripts.per.cell = 200,
+                        get.largevis = FALSE,
+                        get.tsne = FALSE,
+                        make.geneknn = FALSE,
+                        k.conos = 15,
+                        k.self = 30,
+                        space = "PCA",
+                        ncomps = 40,
+                        matching.method = "mNN",
+                        metric = "angular",
+                        score.component.variance = TRUE,
+                        alignment.strength = 0,
+                        min.dist = 0.01,
+                        spread = 15,
+                        n.iterations = 1) {
+
+    if (length(cms) != length(sample.names)) {
+        stop("Sample names must match number of count matrices.")
+    }
+
+    if (any(is.na(sample.names))) {
+        stop("Sample names contain NAs.")
+    }
+
+    # If needed, make cell names unique
+    if (!any(duplicated(unlist(lapply(cms, colnames))))) {
+        message("Cell barcodes are already unique — skipping renaming")
+    } else {
+        cms <- sample.names %>% lapply(function(sample) {
+            cm <- cms[[sample]]
+            colnames(cm) %<>% {
+                paste0(sample, "!!", .)
+            }
+            return(cm)
+        }) %>% setNames(sample.names)
+    }
+
     message("Performing P2 processing...")
-    panel.preprocessed <- lapply(cms, function(x) basicP2proc(x, n.cores = n.cores.p2,
-                                                              n.odgenes = n.odgenes, 
+    panel.preprocessed <- lapply(cms, function(x) basicP2proc(x,
+                                                              n.cores = n.cores.p2,
+                                                              n.odgenes = n.odgenes,
                                                               nPcs = nPcs,
-                                                              k = k.p2, 
-                                                              perplexity = perplexity, 
-                                                              log.scale = log.scale, 
-                                                              trim = trim, 
-                                                              keep.genes = keep.genes, 
-                                                              min.cells.per.gene = min.cells.per.gene, 
-                                                              min.transcripts.per.cell = min.transcripts.per.cell, 
-                                                              get.largevis = get.largevis, 
-                                                              get.tsne = get.tsne, 
+                                                              k = k.p2,
+                                                              perplexity = perplexity,
+                                                              log.scale = log.scale,
+                                                              trim = trim,
+                                                              keep.genes = keep.genes,
+                                                              min.cells.per.gene = min.cells.per.gene,
+                                                              min.transcripts.per.cell = min.transcripts.per.cell,
+                                                              get.largevis = get.largevis,
+                                                              get.tsne = get.tsne,
                                                               make.geneknn = make.geneknn))
-    
-    names(panel.preprocessed) = sample.names
-    con <- Conos$new(panel.preprocessed, n.cores=n.cores.con)
-    
-    con <- buildConosGraph(con=con,
-                           k.conos=k.conos, 
-                           k.self=k.self, 
-                           space=space, 
-                           ncomps=ncomps, 
-                           n.odgenes=n.odgenes, 
-                           matching.method=matching.method, 
-                           metric=metric, 
-                           score.component.variance=score.component.variance,
-                           alignment.strength=alignment.strength,
-                           min.dist=min.dist, 
-                           spread=spread,
-                           n.iterations=n.iterations)
-    
-    return(list(con=con, panel.preprocessed=panel.preprocessed))
-  } else {
-    stop("Sample names must match number of count matrices.")
-  }
-  
+
+    names(panel.preprocessed) <- sample.names
+
+    con <- Conos$new(panel.preprocessed, n.cores = n.cores.con)
+    con <- buildConosGraph(con = con,
+                           k.conos = k.conos,
+                           k.self = k.self,
+                           space = space,
+                           ncomps = ncomps,
+                           n.odgenes = n.odgenes,
+                           matching.method = matching.method,
+                           metric = metric,
+                           score.component.variance = score.component.variance,
+                           alignment.strength = alignment.strength, min.dist = min.dist, 
+                           spread = spread,
+                           n.iterations = n.iterations)
+
+    return(list(con = con, panel.preprocessed = panel.preprocessed))
 }
 
 #' @export
